@@ -1,6 +1,6 @@
 {
   "name": "consulta-email-academico",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Consulta de e-mail acadêmico via interface Cruzeiro do Sul (Playwright)",
   "type": "module",
@@ -49,6 +49,9 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Consulta E-mail Acadêmico",
       "installerLanguages": [
         "pt_BR"
       ]
