@@ -148,6 +148,59 @@ function apiIndicatesBlock(payload, status) {
   return false;
 }
 
+export function truncateVisibleText(text, maxLen = 2000) {
+  const normalized = (text ?? '').replace(/\s+/g, ' ').trim();
+  if (normalized.length <= maxLen) {
+    return normalized;
+  }
+  return `${normalized.slice(0, maxLen)}…`;
+}
+
+export function isLikelyErrorPage({ title = '', httpStatus, visibleText = '' }) {
+  const blob = `${title}\n${visibleText}`.toLowerCase();
+  if (typeof httpStatus === 'number' && httpStatus >= 400) {
+    return true;
+  }
+  if (blob.includes('página não encontrada') || blob.includes('pagina nao encontrada')) {
+    return true;
+  }
+  if ((blob.includes('oops') || blob.includes('opss')) && blob.includes('encontrada')) {
+    return true;
+  }
+  if (blob.includes('access denied') || blob.includes('forbidden')) {
+    return true;
+  }
+  return false;
+}
+
+export function buildPageDiagnostics({ url, title, httpStatus, visibleText }) {
+  return {
+    url: url ?? '',
+    title: title ?? '',
+    httpStatus: httpStatus ?? null,
+    visibleText: truncateVisibleText(visibleText),
+  };
+}
+
+export function logPageDiagnostics(diagnostics) {
+  console.error('[diagnostico-pagina]');
+  console.error(`url: ${diagnostics.url}`);
+  console.error(`titulo: ${diagnostics.title}`);
+  console.error(
+    `http: ${diagnostics.httpStatus === null ? 'desconhecido' : diagnostics.httpStatus}`,
+  );
+  console.error(`texto_visivel: ${diagnostics.visibleText}`);
+}
+
+export async function gatherPageDiagnostics(page, navigationResponse) {
+  return buildPageDiagnostics({
+    url: page.url(),
+    title: await page.title().catch(() => ''),
+    httpStatus: navigationResponse?.status?.() ?? navigationResponse?.status ?? null,
+    visibleText: await page.locator('body').innerText().catch(() => ''),
+  });
+}
+
 export function classifyFromText(bodyText) {
   const normalized = bodyText.replace(/\s+/g, ' ').trim();
   const lower = normalized.toLowerCase();
@@ -257,6 +310,39 @@ function runSimulations() {
     console.log('OK [api recaptcha]');
   }
 
+  const longText = 'x'.repeat(2500);
+  const truncated = truncateVisibleText(longText);
+  if (truncated.length !== 2001 || !truncated.endsWith('…')) {
+    failed += 1;
+    console.error('FALHA [truncate texto]');
+  } else {
+    console.log('OK [truncate texto]');
+  }
+
+  const errorPage = isLikelyErrorPage({
+    title: 'Opss, página não encontrada!',
+    httpStatus: 404,
+    visibleText: 'Por favor, entre em contato com o administrador',
+  });
+  if (!errorPage) {
+    failed += 1;
+    console.error('FALHA [pagina erro]');
+  } else {
+    console.log('OK [pagina erro]');
+  }
+
+  const recoverPage = isLikelyErrorPage({
+    title: 'Recuperar e-mail | Cruzeiro do Sul Educacional',
+    httpStatus: 200,
+    visibleText: 'Insira seu CPF',
+  });
+  if (recoverPage) {
+    failed += 1;
+    console.error('FALHA [pagina recuperacao]');
+  } else {
+    console.log('OK [pagina recuperacao]');
+  }
+
   process.exit(failed > 0 ? 1 : 0);
 }
 
@@ -278,10 +364,44 @@ async function runConsultation(session, cpf) {
     }
   });
 
-  await page.goto(PAGE_URL, { waitUntil: 'domcontentloaded', timeout: timeoutMs });
+  let navigationResponse = null;
+  try {
+    navigationResponse = await page.goto(PAGE_URL, {
+      waitUntil: 'domcontentloaded',
+      timeout: timeoutMs,
+    });
+  } catch {
+    const diagnostics = await gatherPageDiagnostics(page, navigationResponse);
+    logPageDiagnostics(diagnostics);
+    return {
+      status: STATUS.ERROR,
+      email: null,
+      mensagem: 'Falha ao carregar a página de recuperação.',
+    };
+  }
+
+  const initialDiagnostics = await gatherPageDiagnostics(page, navigationResponse);
+  if (isLikelyErrorPage(initialDiagnostics)) {
+    logPageDiagnostics(initialDiagnostics);
+    return {
+      status: STATUS.ERROR,
+      email: null,
+      mensagem: 'Página de erro detectada antes do formulário de CPF.',
+    };
+  }
 
   const cpfField = page.locator('input#cpf-field');
-  await cpfField.waitFor({ state: 'visible', timeout: timeoutMs });
+  try {
+    await cpfField.waitFor({ state: 'visible', timeout: timeoutMs });
+  } catch {
+    const diagnostics = await gatherPageDiagnostics(page, navigationResponse);
+    logPageDiagnostics(diagnostics);
+    return {
+      status: STATUS.ERROR,
+      email: null,
+      mensagem: 'Campo CPF não encontrado na página de recuperação.',
+    };
+  }
   await cpfField.fill(cpf);
 
   const continueBtn = page.getByRole('button', { name: 'Continuar' });
