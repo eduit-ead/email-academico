@@ -1,17 +1,57 @@
 {
-  "name": "teste-email-cruzeiro",
+  "name": "consulta-email-academico",
   "version": "1.0.0",
   "private": true,
-  "description": "Consulta local de e-mail acadêmico via interface Cruzeiro do Sul (Playwright)",
+  "description": "Consulta de e-mail acadêmico via interface Cruzeiro do Sul (Playwright)",
   "type": "module",
+  "main": "electron/main.mjs",
   "scripts": {
     "consultar": "node consultar-email.mjs",
-    "simular": "node consultar-email.mjs --simular"
+    "simular": "node consultar-email.mjs --simular",
+    "electron": "electron .",
+    "electron:simular": "cross-env ELECTRON_SIMULAR_UI=1 electron .",
+    "dist": "electron-builder --win"
   },
   "engines": {
     "node": ">=20"
   },
   "dependencies": {
     "playwright": "1.64.1"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "electron": "^35.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "br.unicid.consulta-email",
+    "productName": "Consulta E-mail Acadêmico",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron/**/*",
+      "lib/**/*",
+      "consultar-email.mjs",
+      "package.json",
+      "node_modules/**/*"
+    ],
+    "asarUnpack": [
+      "node_modules/playwright/**",
+      "node_modules/playwright-core/**"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerLanguages": [
+        "pt_BR"
+      ]
+    }
   }
 }

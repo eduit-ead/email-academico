@@ -1,0 +1,145 @@
+:root {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  color: #1a1a1a;
+  background: #f4f6f8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 1.25rem;
+}
+
+header h1 {
+  font-size: 1.35rem;
+  margin: 0 0 0.25rem;
+}
+
+.subtitle {
+  margin: 0 0 1rem;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+input {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #c8d0d8;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  font-size: 0.95rem;
+}
+
+button.primary {
+  width: 100%;
+  background: #0b5cab;
+  color: #fff;
+  font-weight: 600;
+}
+
+button.primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+button#btnCopiar {
+  background: #e8eef5;
+  color: #0b5cab;
+  font-weight: 600;
+}
+
+.status {
+  min-height: 1.25rem;
+  margin: 0.75rem 0 0;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.status.loading {
+  color: #0b5cab;
+}
+
+.warn {
+  margin: 0;
+  color: #8a1f1f;
+  font-size: 0.9rem;
+}
+
+.resultado h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+}
+
+.resultado.encontrado h2 {
+  color: #0d6b3a;
+}
+
+.resultado.nao_localizado h2,
+.resultado.bloqueado h2,
+.resultado.erro h2 {
+  color: #8a1f1f;
+}
+
+.email-label {
+  margin: 0.5rem 0 0.2rem;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.email-valor {
+  margin: 0 0 0.75rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.simulacao h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+}
+
+.hint {
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.sim-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.sim-btns button {
+  background: #eef2f6;
+}

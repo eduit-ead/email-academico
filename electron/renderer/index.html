@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'" />
+    <title>Consulta de e-mail acadêmico</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header>
+        <h1>Consulta de e-mail acadêmico</h1>
+        <p class="subtitle">UNICID — recuperação oficial via navegador</p>
+      </header>
+
+      <section class="card" id="chromeAviso" hidden>
+        <p class="warn">
+          Google Chrome não detectado. Instale em
+          <a href="https://www.google.com/chrome/" target="_blank" rel="noopener">google.com/chrome</a>
+          antes de consultar.
+        </p>
+      </section>
+
+      <section class="card">
+        <label for="cpf">CPF do aluno</label>
+        <input
+          id="cpf"
+          name="cpf"
+          type="text"
+          inputmode="numeric"
+          autocomplete="off"
+          placeholder="000.000.000-00 ou somente números"
+        />
+        <button id="btnConsultar" type="button" class="primary">Consultar</button>
+        <p id="statusLinha" class="status" aria-live="polite"></p>
+      </section>
+
+      <section class="card resultado" id="painelResultado" hidden>
+        <h2 id="resultadoTitulo">Resultado</h2>
+        <p id="resultadoMensagem"></p>
+        <div id="emailBloco" hidden>
+          <p class="email-label">E-mail acadêmico</p>
+          <p id="emailValor" class="email-valor"></p>
+          <button id="btnCopiar" type="button">Copiar e-mail</button>
+        </div>
+      </section>
+
+      <section class="card simulacao" id="painelSimulacao" hidden>
+        <h2>Pré-visualizar estados (simulação)</h2>
+        <p class="hint">Sem consulta real — apenas layout.</p>
+        <div class="sim-btns">
+          <button type="button" data-sim="encontrado">Encontrado</button>
+          <button type="button" data-sim="nao_localizado">Não localizado</button>
+          <button type="button" data-sim="bloqueado">Bloqueado</button>
+          <button type="button" data-sim="erro">Erro</button>
+        </div>
+      </section>
+    </main>
+    <script src="renderer.js"></script>
+  </body>
+</html>

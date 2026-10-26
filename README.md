@@ -16,7 +16,30 @@ cd "c:\Users\Fabio Villas Boas\DEV\teste-email-cruzeiro"
 npm install
 ```
 
-## Executar uma consulta
+## Aplicativo desktop (Windows)
+
+```powershell
+npm install
+npm run electron
+```
+
+Pré-requisito: **Google Chrome** instalado. O app usa perfil exclusivo em `%APPDATA%\consulta-email-academico\chrome-profile-app`.
+
+Pré-visualizar estados da interface **sem consulta real**:
+
+```powershell
+npm run electron:simular
+```
+
+Instalador para operadores (sem Node.js no destino):
+
+```powershell
+npm run dist
+```
+
+Arquivo gerado: `dist\Consulta E-mail Acadêmico Setup 1.0.0.exe`
+
+## Executar uma consulta (terminal)
 
 ```powershell
 npm run consultar

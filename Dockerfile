@@ -12,6 +12,7 @@ COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 
 COPY consultar-email.mjs ./
+COPY lib ./lib/
 COPY scripts/consultar-xvfb.sh ./scripts/consultar-xvfb.sh
 RUN chmod +x /app/scripts/consultar-xvfb.sh
 
