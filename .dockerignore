@@ -1,0 +1,9 @@
+node_modules
+.chrome-profile-test
+playwright-report
+test-results
+.git
+.gitignore
+*.md
+.env
+.env.*
