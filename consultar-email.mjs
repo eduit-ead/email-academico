@@ -97,9 +97,18 @@ async function readCpf() {
   return cpf;
 }
 
+function warnIfContainerNeedsDisplay(headless) {
+  if (process.env.CONTAINER === '1' && !headless && !process.env.DISPLAY) {
+    console.error(
+      'AVISO: HEADLESS=false sem DISPLAY. No container Linux use: printf ... | /app/scripts/consultar-xvfb.sh',
+    );
+  }
+}
+
 async function launchBrowser() {
   const headless = resolveHeadless();
   const timeoutMs = resolveTimeoutMs();
+  warnIfContainerNeedsDisplay(headless);
 
   if (useWindowsChromeProfile()) {
     const context = await chromium.launchPersistentContext(PROFILE_DIR, {
@@ -341,6 +350,14 @@ function runSimulations() {
     console.error('FALHA [pagina recuperacao]');
   } else {
     console.log('OK [pagina recuperacao]');
+  }
+
+  const forbidden = isLikelyErrorPage({ title: '', httpStatus: 403, visibleText: '' });
+  if (!forbidden) {
+    failed += 1;
+    console.error('FALHA [http 403]');
+  } else {
+    console.log('OK [http 403]');
   }
 
   process.exit(failed > 0 ? 1 : 0);

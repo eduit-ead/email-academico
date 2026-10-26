@@ -60,17 +60,21 @@ Diretório de trabalho: `/app`. O container fica **ocioso** (sem navegador, sem 
 
 ### Uma consulta manual (no terminal do container)
 
+No Linux, **Chromium headless** costuma receber **HTTP 403** antes do formulário. Use **Xvfb** (navegador com interface em display virtual), sem contornar bloqueios:
+
 ```bash
-printf '%s\n' 'CPF_DO_ALUNO' | node consultar-email.mjs
+printf '%s\n' 'CPF_DO_ALUNO' | /app/scripts/consultar-xvfb.sh
 ```
 
-Saída: uma linha JSON; o processo `node` termina e o navegador fecha. O container continua rodando (`sleep infinity`).
+O script define `HEADLESS=false` e executa `xvfb-run` com o Chromium da imagem Playwright (`1.64.1`).
+
+Saída: uma linha JSON em stdout; diagnóstico de página (se houver) em stderr; o processo encerra e o navegador fecha. O container segue com `sleep infinity`.
 
 Variáveis opcionais no serviço:
 
-| Variável | Padrão | Descrição |
-|----------|--------|-----------|
-| `HEADLESS` | `true` | Navegador sem interface |
+| Variável | Padrão no container | Descrição |
+|----------|---------------------|-----------|
+| `HEADLESS` | `false` | `true` = headless (pode resultar em 403 no site) |
 | `CONSULTA_TIMEOUT_MS` | `120000` | Timeout Playwright |
 | `CONTAINER` | `1` | Chromium empacotado (Linux) |
 
@@ -79,5 +83,5 @@ Build local (quando houver Docker):
 ```bash
 docker build -t consulta-email-cruzeiro .
 docker run -d --name consulta-email-validacao consulta-email-cruzeiro
-docker exec -it consulta-email-validacao bash -lc "printf '%s\n' 'CPF_DO_ALUNO' | node consultar-email.mjs"
+docker exec -it consulta-email-validacao bash -lc "printf '%s\n' 'CPF_DO_ALUNO' | /app/scripts/consultar-xvfb.sh"
 ```
